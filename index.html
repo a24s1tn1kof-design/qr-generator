@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QR с русским текстом</title>
+<title>Генератор QR</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -227,7 +227,7 @@
 <body>
 
 <div class="container">
-  <h1>🔗 Генератор QR (UTF-8)</h1>
+  <h1>🔗 Генератор QR</h1>
 
   <div class="mode-tabs">
     <div class="mode-tab active" data-mode="text">📝 Текст / Ссылка</div>
@@ -235,7 +235,7 @@
   </div>
 
   <div class="mode-panel active" data-panel="text">
-    <label for="text">Текст или ссылка (русский работает)</label>
+    <label for="text">Текст или ссылка</label>
     <textarea id="text" placeholder="Введите текст...">Привет, мир! 🎉</textarea>
   </div>
 
@@ -294,8 +294,7 @@
   </div>
 </div>
 
-<!-- ✅ НОВАЯ БИБЛИОТЕКА: qrcode от Soldair. Правильно работает с UTF-8 и кириллицей -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
   let fgColor = '#000000';
   let bgColor = '#ffffff';
@@ -304,7 +303,6 @@
 
   const MAX_SIZE_BYTES = 2048;
 
-  /* ============ ЦВЕТА ============ */
   const fgInput = document.getElementById('fg-color-input');
   const bgInput = document.getElementById('bg-color-input');
 
@@ -320,7 +318,6 @@
     document.getElementById('bg-hex').textContent = bgColor.toUpperCase();
   });
 
-  /* ============ ПЕРЕКЛЮЧАТЕЛЬ ============ */
   document.querySelectorAll('.mode-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
@@ -331,7 +328,6 @@
     });
   });
 
-  /* ============ ЗАГРУЗКА КАРТИНКИ ============ */
   const uploadZone = document.getElementById('upload-zone');
   const imageInput = document.getElementById('image-input');
   const uploadPlaceholder = document.getElementById('upload-placeholder');
@@ -366,7 +362,6 @@
     uploadStatus.textContent = text;
   }
 
-  /* ============ ГЕНЕРАЦИЯ QR ============ */
   const modal = document.getElementById('modal');
   const qrContainer = document.getElementById('qrcode');
 
@@ -385,7 +380,6 @@
 
     if (currentMode === 'text') {
       content = document.getElementById('text').value;
-      // .trim() НЕ используем — сохраняем пробелы и переносы
       if (!content || !content.trim()) {
         alert('Введите текст или ссылку!');
         return;
@@ -409,20 +403,15 @@
     qrContainer.style.padding = margin + 'px';
     qrContainer.innerHTML = '';
 
-    // ✅ QRCode.toCanvas правильно кодирует UTF-8 (кириллица, эмодзи)
-    // correctLevel L — максимальная ёмкость (для вшитых картинок)
     try {
       const canvas = document.createElement('canvas');
       qrContainer.appendChild(canvas);
 
       await QRCode.toCanvas(canvas, content, {
         width: size,
-        margin: 0,                      // margin внутри canvas = 0, отступ делаем через padding контейнера
-        color: {
-          dark: fgColor,
-          light: bgColor
-        },
-        errorCorrectionLevel: 'L'       // L — для картинок; для текста можно 'M' или 'H'
+        margin: 0,
+        color: { dark: fgColor, light: bgColor },
+        errorCorrectionLevel: 'L'
       });
 
       modal.classList.add('show');
@@ -443,7 +432,6 @@
       return;
     }
 
-    // Создаём новый canvas с отступами
     const margin = parseInt(document.getElementById('margin').value) || 20;
     const out = document.createElement('canvas');
     out.width = canvas.width + margin * 2;
