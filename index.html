@@ -211,11 +211,6 @@
     background: #e0e0e0; box-shadow: none; transform: none;
   }
 
-  .help-text {
-    font-size: 12px; color: #888;
-    margin-top: -10px; margin-bottom: 14px; line-height: 1.4;
-  }
-
   .warn-box {
     background: #fffaf0; border-left: 3px solid #dd6b20;
     padding: 10px 12px; border-radius: 6px;
@@ -294,7 +289,7 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
   let fgColor = '#000000';
   let bgColor = '#ffffff';
@@ -352,7 +347,7 @@
       imageDataURL = ev.target.result;
       uploadZone.classList.add('has-file');
       uploadPlaceholder.innerHTML = `<img src="${imageDataURL}" class="preview">`;
-      showStatus('success', `✅ Готово (${(file.size/1024).toFixed(1)} КБ). Вшито в QR.`);
+      showStatus('success', `✅ Готово (${(file.size/1024).toFixed(1)} КБ).`);
     };
     reader.readAsDataURL(file);
   });
@@ -375,7 +370,7 @@
     if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
   });
 
-  async function generate() {
+  function generate() {
     let content = '';
 
     if (currentMode === 'text') {
@@ -404,14 +399,14 @@
     qrContainer.innerHTML = '';
 
     try {
-      const canvas = document.createElement('canvas');
-      qrContainer.appendChild(canvas);
-
-      await QRCode.toCanvas(canvas, content, {
+      // escape/unescape — фикс кириллицы для qrcodejs
+      new QRCode(qrContainer, {
+        text: content,
         width: size,
-        margin: 0,
-        color: { dark: fgColor, light: bgColor },
-        errorCorrectionLevel: 'L'
+        height: size,
+        colorDark: fgColor,
+        colorLight: bgColor,
+        correctLevel: QRCode.CorrectLevel.L
       });
 
       modal.classList.add('show');
@@ -427,27 +422,37 @@
 
   function download() {
     const canvas = qrContainer.querySelector('canvas');
-    if (!canvas) {
-      alert('QR-код ещё не сгенерирован');
+    const img = qrContainer.querySelector('img');
+
+    if (canvas) {
+      const margin = parseInt(document.getElementById('margin').value) || 20;
+      const out = document.createElement('canvas');
+      out.width = canvas.width + margin * 2;
+      out.height = canvas.height + margin * 2;
+
+      const ctx = out.getContext('2d');
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, out.width, out.height);
+      ctx.drawImage(canvas, margin, margin);
+
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = out.toDataURL('image/png');
+      link.click();
       return;
     }
 
-    const margin = parseInt(document.getElementById('margin').value) || 20;
-    const out = document.createElement('canvas');
-    out.width = canvas.width + margin * 2;
-    out.height = canvas.height + margin * 2;
+    if (img && img.src) {
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = img.src;
+      link.click();
+      return;
+    }
 
-    const ctx = out.getContext('2d');
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, out.width, out.height);
-    ctx.drawImage(canvas, margin, margin);
-
-    const link = document.createElement('a');
-    link.download = 'qrcode.png';
-    link.href = out.toDataURL('image/png');
-    link.click();
+    alert('QR-код ещё не сгенерирован');
   }
 </script>
 
 </body>
- </html>
+     </html>
