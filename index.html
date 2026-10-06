@@ -55,78 +55,166 @@
   }
 
   textarea { resize: vertical; min-height: 90px; }
+  textarea:focus, input:focus { border-color: #667eea; }
 
-  textarea:focus, input:focus {
-    border-color: #667eea;
-  }
-
-  .row {
+  /* Переключатель режима */
+  .mode-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-  }
-
-  /* Палитра цветов */
-  .color-picker {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-
-  .color-swatch {
-    width: 38px;
-    height: 38px;
+    background: #f0f0f0;
     border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+
+  .mode-tab {
+    padding: 10px;
+    text-align: center;
     cursor: pointer;
-    border: 3px solid transparent;
-    transition: transform 0.15s, border-color 0.15s;
-    position: relative;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .mode-tab.active {
+    background: white;
+    color: #667eea;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   }
 
-  .color-swatch:hover { transform: scale(1.1); }
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; }
 
-  .color-swatch.active {
-    border-color: #667eea;
-    transform: scale(1.1);
+  /* Кнопка выбора цвета */
+  .color-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 14px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 18px;
+    transition: border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
   }
 
-  .color-swatch.active::after {
-    content: '✓';
+  .color-btn:hover {
+    border-color: #667eea;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .color-btn .swatch-preview {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+  }
+
+  .color-btn .hex-value {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    color: #666;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+
+  .color-btn .chevron {
+    margin-left: auto;
+    color: #999;
+    font-size: 18px;
+  }
+
+  .color-btn input[type="color"] {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+
+  /* Зона загрузки фото */
+  .upload-zone {
+    border: 2px dashed #d0d0d0;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 18px;
+    position: relative;
+    background: #fafafa;
+    min-height: 100px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    gap: 8px;
   }
 
-  .options {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
+  .upload-zone:hover {
+    border-color: #667eea;
+    color: #667eea;
+    background: #f5f7ff;
   }
 
-  .options label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 0;
+  .upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
     cursor: pointer;
-    font-weight: 400;
   }
 
-  .options input[type="checkbox"] {
-    width: auto;
-    margin: 0;
-    cursor: pointer;
-    accent-color: #667eea;
+  .upload-zone.has-file {
+    border-color: #38a169;
+    color: #38a169;
+    background: #f0fff4;
+    border-style: solid;
   }
+
+  .upload-zone img.preview {
+    max-width: 100%;
+    max-height: 140px;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  .upload-zone .hint {
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+  }
+
+  /* Прогресс загрузки */
+  .upload-status {
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: none;
+  }
+
+  .upload-status.show { display: block; }
+  .upload-status.loading { background: #ebf8ff; color: #2b6cb0; }
+  .upload-status.success { background: #f0fff4; color: #2f855a; }
+  .upload-status.error { background: #fff5f5; color: #c53030; }
 
   button {
     width: 100%;
@@ -147,55 +235,12 @@
   button:focus { outline: none; }
   button::-moz-focus-inner { border: 0; }
 
-  button:hover {
+  #generate:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
   }
 
-  button:active { transform: translateY(0); }
-
-  /* Загрузка логотипа */
-  .upload-zone {
-    border: 2px dashed #d0d0d0;
-    border-radius: 10px;
-    padding: 16px;
-    text-align: center;
-    color: #888;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: 18px;
-    position: relative;
-    background: #fafafa;
-  }
-
-  .upload-zone:hover {
-    border-color: #667eea;
-    color: #667eea;
-    background: #f5f7ff;
-  }
-
-  .upload-zone input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .upload-zone.has-file {
-    border-color: #667eea;
-    color: #667eea;
-    background: #f5f7ff;
-  }
-
-  .logo-preview {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    object-fit: cover;
-    vertical-align: middle;
-    margin-right: 10px;
-  }
+  #generate:active { transform: translateY(0); }
 
   /* Модальное окно */
   .modal-overlay {
@@ -212,16 +257,13 @@
     transition: opacity 0.3s ease;
   }
 
-  .modal-overlay.show {
-    display: flex;
-    opacity: 1;
-  }
+  .modal-overlay.show { display: flex; opacity: 1; }
 
   .modal {
     background: white;
     border-radius: 20px;
     padding: 30px;
-    max-width: 500px;
+    max-width: 480px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
@@ -232,9 +274,7 @@
     text-align: center;
   }
 
-  .modal-overlay.show .modal {
-    transform: scale(1);
-  }
+  .modal-overlay.show .modal { transform: scale(1); }
 
   .modal h2 {
     color: #333;
@@ -275,6 +315,7 @@
     padding: 0;
     transition: background 0.2s, transform 0.2s;
     line-height: 1;
+    width: 36px;
   }
 
   .close-btn:hover {
@@ -287,7 +328,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin-top: 10px;
   }
 
   .btn-secondary {
@@ -298,6 +338,15 @@
   .btn-secondary:hover {
     background: #e0e0e0;
     box-shadow: none;
+    transform: none;
+  }
+
+  .help-text {
+    font-size: 12px;
+    color: #888;
+    margin-top: -12px;
+    margin-bottom: 15px;
+    line-height: 1.4;
   }
 </style>
 </head>
@@ -306,32 +355,58 @@
 <div class="container">
   <h1>🔗 Генератор QR-кодов</h1>
 
-  <label for="text">Текст или ссылка</label>
-  <textarea id="text" placeholder="Введите текст или URL...">https://example.com</textarea>
+  <!-- Переключатель режима -->
+  <div class="mode-tabs">
+    <div class="mode-tab active" data-mode="text">📝 Текст / Ссылка</div>
+    <div class="mode-tab" data-mode="image">🖼 Картинка</div>
+  </div>
 
-  <div class="row">
-    <div>
-      <label for="size">Размер (px)</label>
-      <input type="number" id="size" value="300" min="100" max="1000" step="50">
+  <!-- Режим: текст -->
+  <div class="mode-panel active" data-panel="text">
+    <label for="text">Текст или ссылка</label>
+    <textarea id="text" placeholder="Введите текст или URL...">https://example.com</textarea>
+  </div>
+
+  <!-- Режим: картинка -->
+  <div class="mode-panel" data-panel="image">
+    <label>Загрузите картинку</label>
+    <div class="upload-zone" id="upload-zone">
+      <input type="file" id="image-input" accept="image/*">
+      <span id="upload-placeholder">📷 Нажмите, чтобы выбрать фото</span>
+      <span class="hint">После сканирования откроется эта картинка</span>
     </div>
+    <div class="upload-status" id="upload-status"></div>
+    <p class="help-text">
+      ⚠️ Картинка загружается на публичный хостинг imgbb.com, чтобы QR-код работал с любого устройства.
+    </p>
   </div>
 
+  <!-- Размер -->
+  <label for="size">Размер (px)</label>
+  <input type="number" id="size" value="300" min="100" max="1000" step="50">
+
+  <!-- Цвет кода -->
   <label>Цвет кода</label>
-  <div class="color-picker" id="fg-picker"></div>
+  <button type="button" class="color-btn" id="fg-btn">
+    <div class="swatch-preview" id="fg-preview" style="background:#000000"></div>
+    <span class="hex-value" id="fg-hex">#000000</span>
+    <span class="chevron">▾</span>
+    <input type="color" id="fg-color-input" value="#000000">
+  </button>
 
+  <!-- Цвет фона -->
   <label>Цвет фона</label>
-  <div class="color-picker" id="bg-picker"></div>
-
-  <label>Логотип в центре (необязательно)</label>
-  <div class="upload-zone" id="upload-zone">
-    <input type="file" id="logo-input" accept="image/*">
-    <span id="upload-text">📷 Нажмите, чтобы выбрать фото</span>
-  </div>
+  <button type="button" class="color-btn" id="bg-btn">
+    <div class="swatch-preview" id="bg-preview" style="background:#ffffff"></div>
+    <span class="hex-value" id="bg-hex">#FFFFFF</span>
+    <span class="chevron">▾</span>
+    <input type="color" id="bg-color-input" value="#ffffff">
+  </button>
 
   <button id="generate">Сгенерировать QR-код</button>
 </div>
 
-<!-- Модальное окно с результатом -->
+<!-- Модальное окно -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <button class="close-btn" id="close-modal" title="Закрыть">✕</button>
@@ -346,82 +421,136 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
-  /* ============ ПАЛИТРЫ ЦВЕТОВ ============ */
-  const FG_COLORS = [
-    '#000000', '#1a1a1a', '#374151', '#667eea',
-    '#764ba2', '#e53e3e', '#dd6b20', '#38a169',
-    '#319795', '#d53f8c'
-  ];
-  const BG_COLORS = [
-    '#ffffff', '#f7fafc', '#fffaf0', '#f0fff4',
-    '#ebf8ff', '#faf5ff', '#fff5f5', '#1a1a1a',
-    '#2d3748', '#000000'
-  ];
+  /* ============ КОНФИГ ============ */
+  // 🔑 Вставь сюда свой бесплатный API-ключ с https://api.imgbb.com/
+  const IMGBB_API_KEY = 'ТВОЙ_API_КЛЮЧ_ЗДЕСЬ';
 
   let fgColor = '#000000';
   let bgColor = '#ffffff';
-  let logoDataURL = null;
+  let currentMode = 'text';
+  let uploadedImageURL = null;
 
-  /* ============ СОЗДАНИЕ ПАЛИТР ============ */
-  function buildPicker(containerId, colors, initial, onSelect) {
-    const container = document.getElementById(containerId);
-    colors.forEach(color => {
-      const swatch = document.createElement('div');
-      swatch.className = 'color-swatch' + (color === initial ? ' active' : '');
-      swatch.style.background = color;
-      swatch.dataset.color = color;
-      swatch.addEventListener('click', () => {
-        container.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-        swatch.classList.add('active');
-        onSelect(color);
-      });
-      container.appendChild(swatch);
+  /* ============ ЦВЕТА ============ */
+  const fgInput = document.getElementById('fg-color-input');
+  const bgInput = document.getElementById('bg-color-input');
+
+  fgInput.addEventListener('input', e => {
+    fgColor = e.target.value;
+    document.getElementById('fg-preview').style.background = fgColor;
+    document.getElementById('fg-hex').textContent = fgColor.toUpperCase();
+  });
+
+  bgInput.addEventListener('input', e => {
+    bgColor = e.target.value;
+    document.getElementById('bg-preview').style.background = bgColor;
+    document.getElementById('bg-hex').textContent = bgColor.toUpperCase();
+  });
+
+  /* ============ ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА ============ */
+  document.querySelectorAll('.mode-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      currentMode = tab.dataset.mode;
+      document.querySelector(`.mode-panel[data-panel="${currentMode}"]`).classList.add('active');
     });
-  }
+  });
 
-  buildPicker('fg-picker', FG_COLORS, fgColor, c => fgColor = c);
-  buildPicker('bg-picker', BG_COLORS, bgColor, c => bgColor = c);
-
-  /* ============ ЗАГРУЗКА ЛОГОТИПА ============ */
+  /* ============ ЗАГРУЗКА ФОТО ============ */
   const uploadZone = document.getElementById('upload-zone');
-  const uploadText = document.getElementById('upload-text');
-  const logoInput  = document.getElementById('logo-input');
+  const imageInput = document.getElementById('image-input');
+  const uploadPlaceholder = document.getElementById('upload-placeholder');
+  const uploadStatus = document.getElementById('upload-status');
 
-  logoInput.addEventListener('change', e => {
+  imageInput.addEventListener('change', async e => {
     const file = e.target.files[0];
     if (!file) return;
 
+    if (!file.type.startsWith('image/')) {
+      showStatus('error', '❌ Это не картинка');
+      return;
+    }
+
+    if (file.size > 32 * 1024 * 1024) {
+      showStatus('error', '❌ Файл больше 32 МБ');
+      return;
+    }
+
+    // Превью сразу
     const reader = new FileReader();
     reader.onload = ev => {
-      logoDataURL = ev.target.result;
       uploadZone.classList.add('has-file');
-      uploadText.innerHTML = `<img src="${logoDataURL}" class="logo-preview">Фото загружено`;
+      uploadPlaceholder.innerHTML = `<img src="${ev.target.result}" class="preview">`;
     };
     reader.readAsDataURL(file);
+
+    // Загрузка на imgbb
+    if (!IMGBB_API_KEY || IMGBB_API_KEY === 'ТВОЙ_API_КЛЮЧ_ЗДЕСЬ') {
+      showStatus('error', '⚠️ Не задан IMGBB_API_KEY. Смотри инструкцию в чате.');
+      uploadedImageURL = null;
+      return;
+    }
+
+    showStatus('loading', '⏳ Загружаем картинку на сервер...');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        uploadedImageURL = data.data.url;
+        showStatus('success', '✅ Картинка загружена! При сканировании QR откроется это фото.');
+      } else {
+        throw new Error(data.error?.message || 'Ошибка загрузки');
+      }
+    } catch (err) {
+      showStatus('error', '❌ Ошибка загрузки: ' + err.message);
+      uploadedImageURL = null;
+    }
   });
 
+  function showStatus(type, text) {
+    uploadStatus.className = 'upload-status show ' + type;
+    uploadStatus.textContent = text;
+  }
+
   /* ============ ГЕНЕРАЦИЯ QR ============ */
-  const modal      = document.getElementById('modal');
-  const qrContainer= document.getElementById('qrcode');
+  const modal = document.getElementById('modal');
+  const qrContainer = document.getElementById('qrcode');
 
   document.getElementById('generate').addEventListener('click', generate);
   document.getElementById('regenerate').addEventListener('click', generate);
   document.getElementById('close-modal').addEventListener('click', closeModal);
   document.getElementById('download').addEventListener('click', download);
 
-  modal.addEventListener('click', e => {
-    if (e.target === modal) closeModal();
-  });
-
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
   });
 
   function generate() {
-    const text = document.getElementById('text').value.trim();
-    if (!text) {
-      alert('Введите текст или ссылку!');
-      return;
+    let content = '';
+
+    if (currentMode === 'text') {
+      content = document.getElementById('text').value.trim();
+      if (!content) {
+        alert('Введите текст или ссылку!');
+        return;
+      }
+    } else {
+      if (!uploadedImageURL) {
+        alert('Сначала загрузите картинку и дождитесь окончания загрузки!');
+        return;
+      }
+      content = uploadedImageURL;
     }
 
     const size = Math.min(Math.max(parseInt(document.getElementById('size').value) || 300, 100), 1000);
@@ -429,7 +558,7 @@
     qrContainer.innerHTML = '';
 
     new QRCode(qrContainer, {
-      text: text,
+      text: content,
       width: size,
       height: size,
       colorDark: fgColor,
@@ -437,45 +566,14 @@
       correctLevel: QRCode.CorrectLevel.H
     });
 
-    // Открыть модалку сразу
     modal.classList.add('show');
-
-    // Если есть логотип — вставить после отрисовки
-    if (logoDataURL) {
-      setTimeout(() => {
-        // qrcodejs может создать canvas или img — берём canvas для точности
-        const canvas = qrContainer.querySelector('canvas');
-        if (canvas) {
-          const ctx = canvas.getContext('2d');
-          const logoSize = canvas.width * 0.22;
-          const x = (canvas.width - logoSize) / 2;
-          const y = (canvas.height - logoSize) / 2;
-
-          // Белая подложка под логотип
-          const padding = logoSize * 0.12;
-          ctx.fillStyle = bgColor;
-          ctx.fillRect(x - padding, y - padding, logoSize + padding * 2, logoSize + padding * 2);
-
-          const img = new Image();
-          img.onload = () => {
-            ctx.drawImage(img, x, y, logoSize, logoSize);
-            // Также обновим <img> внутри qrContainer, если он используется для скачивания
-            const imgEl = qrContainer.querySelector('img');
-            if (imgEl) imgEl.src = canvas.toDataURL('image/png');
-          };
-          img.src = logoDataURL;
-        }
-      }, 50);
-    }
   }
 
-  function closeModal() {
-    modal.classList.remove('show');
-  }
+  function closeModal() { modal.classList.remove('show'); }
 
   function download() {
     const canvas = qrContainer.querySelector('canvas');
-    const img    = qrContainer.querySelector('img');
+    const img = qrContainer.querySelector('img');
 
     const link = document.createElement('a');
     link.download = 'qrcode.png';
