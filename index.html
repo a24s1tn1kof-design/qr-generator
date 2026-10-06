@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Генератор QR-кодов</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -41,7 +41,7 @@
     font-weight: 600;
   }
 
-  textarea, input[type="text"], input[type="number"], select {
+  textarea, input[type="text"], input[type="number"] {
     width: 100%;
     padding: 12px 15px;
     border: 2px solid #e0e0e0;
@@ -51,11 +51,12 @@
     transition: border-color 0.2s;
     margin-bottom: 18px;
     outline: none;
+    background: white;
   }
 
   textarea { resize: vertical; min-height: 90px; }
 
-  textarea:focus, input:focus, select:focus {
+  textarea:focus, input:focus {
     border-color: #667eea;
   }
 
@@ -65,10 +66,50 @@
     gap: 15px;
   }
 
+  /* Палитра цветов */
+  .color-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .color-swatch {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.15s, border-color 0.15s;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .color-swatch:hover { transform: scale(1.1); }
+
+  .color-swatch.active {
+    border-color: #667eea;
+    transform: scale(1.1);
+  }
+
+  .color-swatch.active::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
   .options {
     display: flex;
     gap: 15px;
     margin-bottom: 18px;
+    flex-wrap: wrap;
   }
 
   .options label {
@@ -98,7 +139,13 @@
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
+
+  button:focus { outline: none; }
+  button::-moz-focus-inner { border: 0; }
 
   button:hover {
     transform: translateY(-2px);
@@ -107,39 +154,101 @@
 
   button:active { transform: translateY(0); }
 
-  button.secondary {
-    background: #f0f0f0;
-    color: #333;
-    margin-top: 10px;
-  }
-
-  button.secondary:hover {
-    background: #e0e0e0;
-    box-shadow: none;
-  }
-
-  #qr-result {
-    margin-top: 25px;
+  /* Загрузка логотипа */
+  .upload-zone {
+    border: 2px dashed #d0d0d0;
+    border-radius: 10px;
+    padding: 16px;
     text-align: center;
+    color: #888;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 18px;
+    position: relative;
+    background: #fafafa;
+  }
+
+  .upload-zone:hover {
+    border-color: #667eea;
+    color: #667eea;
+    background: #f5f7ff;
+  }
+
+  .upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .upload-zone.has-file {
+    border-color: #667eea;
+    color: #667eea;
+    background: #f5f7ff;
+  }
+
+  .logo-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+
+  /* Модальное окно */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
     display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
-  #qr-result.show {
-    display: block;
-    animation: fadeIn 0.4s ease;
+  .modal-overlay.show {
+    display: flex;
+    opacity: 1;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    position: relative;
+    text-align: center;
+  }
+
+  .modal-overlay.show .modal {
+    transform: scale(1);
+  }
+
+  .modal h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 22px;
   }
 
   #qrcode {
     display: inline-block;
     padding: 15px;
     background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin: 0 auto 20px;
   }
 
   #qrcode img, #qrcode canvas {
@@ -148,7 +257,48 @@
     height: auto;
   }
 
-  .buttons { margin-top: 15px; }
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s, transform 0.2s;
+    line-height: 1;
+  }
+
+  .close-btn:hover {
+    background: #e0e0e0;
+    transform: rotate(90deg);
+    box-shadow: none;
+  }
+
+  .modal-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+  }
+
+  .btn-secondary:hover {
+    background: #e0e0e0;
+    box-shadow: none;
+  }
 </style>
 </head>
 <body>
@@ -164,88 +314,163 @@
       <label for="size">Размер (px)</label>
       <input type="number" id="size" value="300" min="100" max="1000" step="50">
     </div>
-    <div>
-      <label for="color">Цвет кода</label>
-      <input type="text" id="color" value="#000000" placeholder="#000000">
-    </div>
   </div>
 
-  <label>Цвет фона</label>
-  <input type="text" id="bgcolor" value="#ffffff" placeholder="#ffffff">
+  <label>Цвет кода</label>
+  <div class="color-picker" id="fg-picker"></div>
 
-  <div class="options">
-    <label><input type="checkbox" id="margin" checked> Отступы</label>
-    <label><input type="checkbox" id="darkMode"> Тёмный QR</label>
+  <label>Цвет фона</label>
+  <div class="color-picker" id="bg-picker"></div>
+
+  <label>Логотип в центре (необязательно)</label>
+  <div class="upload-zone" id="upload-zone">
+    <input type="file" id="logo-input" accept="image/*">
+    <span id="upload-text">📷 Нажмите, чтобы выбрать фото</span>
   </div>
 
   <button id="generate">Сгенерировать QR-код</button>
+</div>
 
-  <div id="qr-result">
+<!-- Модальное окно с результатом -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="close-btn" id="close-modal" title="Закрыть">✕</button>
+    <h2>Ваш QR-код</h2>
     <div id="qrcode"></div>
-    <div class="buttons">
-      <button class="secondary" id="download">💾 Скачать PNG</button>
+    <div class="modal-buttons">
+      <button class="btn-secondary" id="download">💾 Скачать</button>
+      <button id="regenerate">🔄 Обновить</button>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
-  const textInput  = document.getElementById('text');
-  const sizeInput  = document.getElementById('size');
-  const colorInput = document.getElementById('color');
-  const bgInput    = document.getElementById('bgcolor');
-  const marginChk  = document.getElementById('margin');
-  const darkChk    = document.getElementById('darkMode');
-  const result     = document.getElementById('qr-result');
+  /* ============ ПАЛИТРЫ ЦВЕТОВ ============ */
+  const FG_COLORS = [
+    '#000000', '#1a1a1a', '#374151', '#667eea',
+    '#764ba2', '#e53e3e', '#dd6b20', '#38a169',
+    '#319795', '#d53f8c'
+  ];
+  const BG_COLORS = [
+    '#ffffff', '#f7fafc', '#fffaf0', '#f0fff4',
+    '#ebf8ff', '#faf5ff', '#fff5f5', '#1a1a1a',
+    '#2d3748', '#000000'
+  ];
+
+  let fgColor = '#000000';
+  let bgColor = '#ffffff';
+  let logoDataURL = null;
+
+  /* ============ СОЗДАНИЕ ПАЛИТР ============ */
+  function buildPicker(containerId, colors, initial, onSelect) {
+    const container = document.getElementById(containerId);
+    colors.forEach(color => {
+      const swatch = document.createElement('div');
+      swatch.className = 'color-swatch' + (color === initial ? ' active' : '');
+      swatch.style.background = color;
+      swatch.dataset.color = color;
+      swatch.addEventListener('click', () => {
+        container.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+        onSelect(color);
+      });
+      container.appendChild(swatch);
+    });
+  }
+
+  buildPicker('fg-picker', FG_COLORS, fgColor, c => fgColor = c);
+  buildPicker('bg-picker', BG_COLORS, bgColor, c => bgColor = c);
+
+  /* ============ ЗАГРУЗКА ЛОГОТИПА ============ */
+  const uploadZone = document.getElementById('upload-zone');
+  const uploadText = document.getElementById('upload-text');
+  const logoInput  = document.getElementById('logo-input');
+
+  logoInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      logoDataURL = ev.target.result;
+      uploadZone.classList.add('has-file');
+      uploadText.innerHTML = `<img src="${logoDataURL}" class="logo-preview">Фото загружено`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ============ ГЕНЕРАЦИЯ QR ============ */
+  const modal      = document.getElementById('modal');
   const qrContainer= document.getElementById('qrcode');
 
-  let currentQR = null;
-
-  // Автогенерация при загрузке
-  window.addEventListener('load', generate);
-
-  // Горячая клавиша: Ctrl+Enter для генерации
-  textInput.addEventListener('keydown', e => {
-    if (e.ctrlKey && e.key === 'Enter') generate();
-  });
-
-  darkChk.addEventListener('change', () => {
-    if (darkChk.checked) {
-      colorInput.value = '#ffffff';
-      bgInput.value = '#1a1a1a';
-    } else {
-      colorInput.value = '#000000';
-      bgInput.value = '#ffffff';
-    }
-  });
-
   document.getElementById('generate').addEventListener('click', generate);
+  document.getElementById('regenerate').addEventListener('click', generate);
+  document.getElementById('close-modal').addEventListener('click', closeModal);
   document.getElementById('download').addEventListener('click', download);
 
-  function generate() {
-    const text = textInput.value.trim();
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+  });
 
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+  });
+
+  function generate() {
+    const text = document.getElementById('text').value.trim();
     if (!text) {
       alert('Введите текст или ссылку!');
       return;
     }
 
-    const size = Math.min(Math.max(parseInt(sizeInput.value) || 300, 100), 1000);
+    const size = Math.min(Math.max(parseInt(document.getElementById('size').value) || 300, 100), 1000);
 
-    // Очистка
     qrContainer.innerHTML = '';
 
-    // qrcodejs создаёт canvas + img внутри контейнера
-    currentQR = new QRCode(qrContainer, {
+    new QRCode(qrContainer, {
       text: text,
       width: size,
       height: size,
-      colorDark: colorInput.value || '#000000',
-      colorLight: bgInput.value || '#ffffff',
+      colorDark: fgColor,
+      colorLight: bgColor,
       correctLevel: QRCode.CorrectLevel.H
     });
 
-    result.classList.add('show');
+    // Открыть модалку сразу
+    modal.classList.add('show');
+
+    // Если есть логотип — вставить после отрисовки
+    if (logoDataURL) {
+      setTimeout(() => {
+        // qrcodejs может создать canvas или img — берём canvas для точности
+        const canvas = qrContainer.querySelector('canvas');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          const logoSize = canvas.width * 0.22;
+          const x = (canvas.width - logoSize) / 2;
+          const y = (canvas.height - logoSize) / 2;
+
+          // Белая подложка под логотип
+          const padding = logoSize * 0.12;
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(x - padding, y - padding, logoSize + padding * 2, logoSize + padding * 2);
+
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, x, y, logoSize, logoSize);
+            // Также обновим <img> внутри qrContainer, если он используется для скачивания
+            const imgEl = qrContainer.querySelector('img');
+            if (imgEl) imgEl.src = canvas.toDataURL('image/png');
+          };
+          img.src = logoDataURL;
+        }
+      }, 50);
+    }
+  }
+
+  function closeModal() {
+    modal.classList.remove('show');
   }
 
   function download() {
@@ -269,4 +494,4 @@
 </script>
 
 </body>
-</html>
+ </html>
