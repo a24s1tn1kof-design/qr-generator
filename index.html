@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Генератор QR-кодов</title>
+<title>Генератор QR-кодов — Вариант 1 (сжатие)</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -166,10 +166,6 @@
 
   #generate:active { transform: translateY(0); }
 
-  #generate:disabled {
-    opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none;
-  }
-
   .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(0, 0, 0, 0.6);
@@ -245,6 +241,11 @@
     font-size: 12px; color: #888;
     margin-top: -12px; margin-bottom: 15px; line-height: 1.4;
   }
+
+  .size-info {
+    font-size: 12px; color: #38a169;
+    margin-top: -12px; margin-bottom: 15px;
+  }
 </style>
 </head>
 <body>
@@ -267,11 +268,12 @@
     <div class="upload-zone" id="upload-zone">
       <input type="file" id="image-input" accept="image/*">
       <span id="upload-placeholder">📷 Нажмите, чтобы выбрать фото</span>
-      <span class="hint">После сканирования откроется эта картинка</span>
+      <span class="hint">Картинка сжимается автоматически → быстрая загрузка</span>
     </div>
     <div class="upload-status" id="upload-status"></div>
+    <div class="size-info" id="size-info" style="display:none"></div>
     <p class="help-text">
-      ⚠️ Картинка заливается на imgbb.com, чтобы QR работал с любого устройства.
+      ⚡ Картинка сжимается прямо в браузере до ~200 КБ перед отправкой.
     </p>
   </div>
 
@@ -304,7 +306,7 @@
     <div id="qrcode"></div>
     <div id="modal-wait" class="modal-wait" style="display:none">
       <div class="big-spinner"></div>
-      <div>⏳ Ждём загрузку картинки...</div>
+      <div>⏳ Загружаем картинку...</div>
       <div style="font-size:12px;color:#999">QR появится сразу после завершения</div>
     </div>
     <div class="modal-buttons">
@@ -315,15 +317,25 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 <script>
   /* ============ КОНФИГ ============ */
+  // 🔑 Получи бесплатно: https://api.imgbb.com/
   const IMGBB_API_KEY = 'ТВОЙ_API_КЛЮЧ_ЗДЕСЬ';
+
+  // ⚙️ Параметры сжатия
+  const COMPRESSION = {
+    maxSizeMB: 0.2,          // 200 КБ
+    maxWidthOrHeight: 1280,  // Разрешение
+    useWebWorker: true,      // Не блокирует UI
+    initialQuality: 0.8      // Качество JPEG
+  };
 
   let fgColor = '#000000';
   let bgColor = '#ffffff';
   let currentMode = 'text';
   let uploadedImageURL = null;
-  let uploadPromise = null; // промис текущей загрузки
+  let uploadPromise = null;
 
   /* ============ ЦВЕТА ============ */
   const fgInput = document.getElementById('fg-color-input');
@@ -352,13 +364,14 @@
     });
   });
 
-  /* ============ ЗАГРУЗКА ФОТО ============ */
+  /* ============ ЗАГРУЗКА ФОТО С СЖАТИЕМ ============ */
   const uploadZone = document.getElementById('upload-zone');
   const imageInput = document.getElementById('image-input');
   const uploadPlaceholder = document.getElementById('upload-placeholder');
   const uploadStatus = document.getElementById('upload-status');
+  const sizeInfo = document.getElementById('size-info');
 
-  imageInput.addEventListener('change', e => {
+  imageInput.addEventListener('change', async e => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -367,32 +380,46 @@
       return;
     }
 
-    if (file.size > 32 * 1024 * 1024) {
-      showStatus('error', '❌ Файл больше 32 МБ');
-      return;
+    // Показываем исходный размер
+    const originalKB = (file.size / 1024).toFixed(0);
+    sizeInfo.style.display = 'block';
+    sizeInfo.textContent = `📦 Исходный размер: ${originalKB} КБ. Сжимаем...`;
+
+    // 1. Сжимаем в браузере
+    let compressedFile = file;
+    try {
+      showStatus('loading', '🗜️ Сжимаем картинку...');
+      compressedFile = await imageCompression(file, COMPRESSION);
+
+      const compressedKB = (compressedFile.size / 1024).toFixed(0);
+      const saved = (100 - (compressedFile.size / file.size) * 100).toFixed(0);
+      sizeInfo.textContent = `📦 ${originalKB} КБ → ✅ ${compressedKB} КБ (экономия ${saved}%)`;
+
+      console.log(`Сжатие: ${originalKB} КБ → ${compressedKB} КБ`);
+    } catch (err) {
+      console.warn('Сжатие не удалось, грузим как есть', err);
+      sizeInfo.textContent = `⚠️ Не удалось сжать, грузим как есть (${originalKB} КБ)`;
     }
 
-    // Превью сразу
+    // 2. Превью из сжатого файла (быстрее)
     const reader = new FileReader();
     reader.onload = ev => {
       uploadZone.classList.add('has-file');
       uploadPlaceholder.innerHTML = `<img src="${ev.target.result}" class="preview">`;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressedFile);
 
-    // Сброс прошлого URL
+    // 3. Загрузка в фоне
     uploadedImageURL = null;
 
-    // Проверка ключа
     if (!IMGBB_API_KEY || IMGBB_API_KEY === 'ТВОЙ_API_КЛЮЧ_ЗДЕСЬ') {
-      showStatus('error', '⚠️ Не задан IMGBB_API_KEY');
+      showStatus('error', '⚠️ Не задан IMGBB_API_KEY. Смотри комментарий в коде.');
       uploadPromise = Promise.resolve(null);
       return;
     }
 
-    // Запускаем загрузку — сохраняем промис
-    showStatus('loading', 'Загружаем картинку в фоне...');
-    uploadPromise = uploadToImgbb(file);
+    showStatus('loading', '⏳ Загружаем на сервер...');
+    uploadPromise = uploadToImgbb(compressedFile);
   });
 
   async function uploadToImgbb(file) {
@@ -409,7 +436,7 @@
       if (!data.success) throw new Error(data.error?.message || 'Ошибка');
 
       uploadedImageURL = data.data.url;
-      showStatus('success', '✅ Картинка загружена');
+      showStatus('success', '✅ Картинка загружена!');
       return uploadedImageURL;
     } catch (err) {
       showStatus('error', '❌ Ошибка: ' + err.message);
@@ -459,14 +486,13 @@
       return;
     }
 
-    // Если уже загружено — сразу рендер
     if (uploadedImageURL) {
       renderQR(uploadedImageURL, size);
       modal.classList.add('show');
       return;
     }
 
-    // Иначе — открываем модалку со спиннером и ждём
+    // Ждём загрузку в модалке
     qrContainer.innerHTML = '';
     qrContainer.style.display = 'none';
     modalWait.style.display = 'flex';
@@ -502,12 +528,11 @@
 
   function closeModal() {
     modal.classList.remove('show');
-    // Сброс модалки
     setTimeout(() => {
       modalWait.style.display = 'none';
       modalWait.innerHTML = `
         <div class="big-spinner"></div>
-        <div>⏳ Ждём загрузку картинки...</div>
+        <div>⏳ Загружаем картинку...</div>
         <div style="font-size:12px;color:#999">QR появится сразу после завершения</div>
       `;
       qrContainer.style.display = 'inline-block';
@@ -534,4 +559,4 @@
 </script>
 
 </body>
-   </html>
+ </html>
