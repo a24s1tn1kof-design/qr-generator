@@ -26,209 +26,133 @@
     width: 100%;
   }
 
-  h1 {
-    color: #333;
-    margin-bottom: 25px;
-    font-size: 26px;
-    text-align: center;
-  }
+  h1 { color: #333; margin-bottom: 25px; font-size: 26px; text-align: center; }
 
   label {
-    display: block;
-    color: #555;
-    margin-bottom: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    display: block; color: #555; margin-bottom: 8px;
+    font-size: 14px; font-weight: 600;
   }
 
   textarea, input[type="text"], input[type="number"] {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 15px;
-    font-family: inherit;
-    transition: border-color 0.2s;
-    margin-bottom: 18px;
-    outline: none;
-    background: white;
+    width: 100%; padding: 12px 15px;
+    border: 2px solid #e0e0e0; border-radius: 10px;
+    font-size: 15px; font-family: inherit;
+    transition: border-color 0.2s; margin-bottom: 18px;
+    outline: none; background: white;
   }
 
   textarea { resize: vertical; min-height: 90px; }
   textarea:focus, input:focus { border-color: #667eea; }
 
-  /* Переключатель режима */
   .mode-tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    background: #f0f0f0;
-    border-radius: 10px;
-    padding: 4px;
-    margin-bottom: 20px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    background: #f0f0f0; border-radius: 10px;
+    padding: 4px; margin-bottom: 20px;
   }
 
   .mode-tab {
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #666;
-    transition: all 0.2s;
-    user-select: none;
+    padding: 10px; text-align: center; cursor: pointer;
+    border-radius: 8px; font-size: 14px; font-weight: 600;
+    color: #666; transition: all 0.2s; user-select: none;
   }
 
   .mode-tab.active {
-    background: white;
-    color: #667eea;
+    background: white; color: #667eea;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   }
 
   .mode-panel { display: none; }
   .mode-panel.active { display: block; }
 
-  /* Кнопка выбора цвета */
   .color-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 10px 14px;
-    background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-bottom: 18px;
-    transition: border-color 0.2s;
-    position: relative;
-    overflow: hidden;
-    text-align: left;
-    font-size: 15px;
-    font-weight: 500;
-    color: #333;
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; padding: 10px 14px;
+    background: white; border: 2px solid #e0e0e0;
+    border-radius: 10px; cursor: pointer;
+    margin-bottom: 18px; transition: border-color 0.2s;
+    position: relative; overflow: hidden;
+    text-align: left; font-size: 15px;
+    font-weight: 500; color: #333;
   }
 
-  .color-btn:hover {
-    border-color: #667eea;
-    transform: none;
-    box-shadow: none;
-  }
+  .color-btn:hover { border-color: #667eea; }
 
   .color-btn .swatch-preview {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    flex-shrink: 0;
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid #e0e0e0; flex-shrink: 0;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
   }
 
   .color-btn .hex-value {
     font-family: 'SF Mono', Monaco, Consolas, monospace;
-    color: #666;
-    font-size: 14px;
-    text-transform: uppercase;
+    color: #666; font-size: 14px; text-transform: uppercase;
   }
 
-  .color-btn .chevron {
-    margin-left: auto;
-    color: #999;
-    font-size: 18px;
-  }
+  .color-btn .chevron { margin-left: auto; color: #999; font-size: 18px; }
 
   .color-btn input[type="color"] {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-    border: none;
-    padding: 0;
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer; border: none; padding: 0;
   }
 
-  /* Зона загрузки фото */
   .upload-zone {
-    border: 2px dashed #d0d0d0;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    color: #888;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: 18px;
-    position: relative;
-    background: #fafafa;
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    border: 2px dashed #d0d0d0; border-radius: 10px;
+    padding: 20px; text-align: center; color: #888;
+    font-size: 14px; cursor: pointer; transition: all 0.2s;
+    margin-bottom: 18px; position: relative; background: #fafafa;
+    min-height: 100px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px;
   }
 
   .upload-zone:hover {
-    border-color: #667eea;
-    color: #667eea;
-    background: #f5f7ff;
+    border-color: #667eea; color: #667eea; background: #f5f7ff;
   }
 
   .upload-zone input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
   }
 
   .upload-zone.has-file {
-    border-color: #38a169;
-    color: #38a169;
-    background: #f0fff4;
-    border-style: solid;
+    border-color: #38a169; color: #38a169;
+    background: #f0fff4; border-style: solid;
   }
 
   .upload-zone img.preview {
-    max-width: 100%;
-    max-height: 140px;
-    border-radius: 8px;
-    object-fit: contain;
+    max-width: 100%; max-height: 140px;
+    border-radius: 8px; object-fit: contain;
   }
 
-  .upload-zone .hint {
-    font-size: 12px;
-    color: #999;
-    margin-top: 4px;
-  }
+  .upload-zone .hint { font-size: 12px; color: #999; margin-top: 4px; }
 
-  /* Прогресс загрузки */
   .upload-status {
-    font-size: 13px;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    display: none;
+    font-size: 13px; padding: 8px 12px;
+    border-radius: 8px; margin-bottom: 15px;
+    display: none; align-items: center; gap: 8px;
   }
 
-  .upload-status.show { display: block; }
+  .upload-status.show { display: flex; }
   .upload-status.loading { background: #ebf8ff; color: #2b6cb0; }
   .upload-status.success { background: #f0fff4; color: #2f855a; }
   .upload-status.error { background: #fff5f5; color: #c53030; }
 
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid #2b6cb0;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   button {
-    width: 100%;
-    padding: 14px;
+    width: 100%; padding: 14px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
+    color: white; border: none; border-radius: 10px;
+    font-size: 16px; font-weight: 600; cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
+    outline: none; -webkit-tap-highlight-color: transparent;
     user-select: none;
   }
 
@@ -242,111 +166,84 @@
 
   #generate:active { transform: translateY(0); }
 
-  /* Модальное окно */
+  #generate:disabled {
+    opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none;
+  }
+
   .modal-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(6px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 1000;
-    opacity: 0;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px; z-index: 1000; opacity: 0;
     transition: opacity 0.3s ease;
   }
 
   .modal-overlay.show { display: flex; opacity: 1; }
 
   .modal {
-    background: white;
-    border-radius: 20px;
-    padding: 30px;
-    max-width: 480px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
-    position: relative;
-    text-align: center;
+    background: white; border-radius: 20px; padding: 30px;
+    max-width: 480px; width: 100%; max-height: 90vh;
+    overflow-y: auto; box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    transform: scale(0.9); transition: transform 0.3s ease;
+    position: relative; text-align: center;
   }
 
   .modal-overlay.show .modal { transform: scale(1); }
 
-  .modal h2 {
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 22px;
-  }
+  .modal h2 { color: #333; margin-bottom: 20px; font-size: 22px; }
 
   #qrcode {
-    display: inline-block;
-    padding: 15px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    display: inline-block; padding: 15px; background: white;
+    border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     margin: 0 auto 20px;
   }
 
   #qrcode img, #qrcode canvas {
-    display: block;
-    max-width: 100%;
-    height: auto;
+    display: block; max-width: 100%; height: auto;
+  }
+
+  .modal-wait {
+    padding: 40px 20px; color: #666;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 14px;
+  }
+
+  .modal-wait .big-spinner {
+    width: 40px; height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
   }
 
   .close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #f0f0f0;
-    border: none;
-    cursor: pointer;
-    font-size: 20px;
-    color: #666;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    transition: background 0.2s, transform 0.2s;
+    position: absolute; top: 15px; right: 15px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #f0f0f0; border: none; cursor: pointer;
+    font-size: 20px; color: #666;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; transition: background 0.2s, transform 0.2s;
     line-height: 1;
-    width: 36px;
   }
 
   .close-btn:hover {
-    background: #e0e0e0;
-    transform: rotate(90deg);
-    box-shadow: none;
+    background: #e0e0e0; transform: rotate(90deg); box-shadow: none;
   }
 
   .modal-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
   }
 
-  .btn-secondary {
-    background: #f0f0f0;
-    color: #333;
-  }
+  .btn-secondary { background: #f0f0f0; color: #333; }
 
   .btn-secondary:hover {
-    background: #e0e0e0;
-    box-shadow: none;
-    transform: none;
+    background: #e0e0e0; box-shadow: none; transform: none;
   }
 
   .help-text {
-    font-size: 12px;
-    color: #888;
-    margin-top: -12px;
-    margin-bottom: 15px;
-    line-height: 1.4;
+    font-size: 12px; color: #888;
+    margin-top: -12px; margin-bottom: 15px; line-height: 1.4;
   }
 </style>
 </head>
@@ -355,19 +252,16 @@
 <div class="container">
   <h1>🔗 Генератор QR-кодов</h1>
 
-  <!-- Переключатель режима -->
   <div class="mode-tabs">
     <div class="mode-tab active" data-mode="text">📝 Текст / Ссылка</div>
     <div class="mode-tab" data-mode="image">🖼 Картинка</div>
   </div>
 
-  <!-- Режим: текст -->
   <div class="mode-panel active" data-panel="text">
     <label for="text">Текст или ссылка</label>
     <textarea id="text" placeholder="Введите текст или URL...">https://example.com</textarea>
   </div>
 
-  <!-- Режим: картинка -->
   <div class="mode-panel" data-panel="image">
     <label>Загрузите картинку</label>
     <div class="upload-zone" id="upload-zone">
@@ -377,15 +271,13 @@
     </div>
     <div class="upload-status" id="upload-status"></div>
     <p class="help-text">
-      ⚠️ Картинка загружается на публичный хостинг imgbb.com, чтобы QR-код работал с любого устройства.
+      ⚠️ Картинка заливается на imgbb.com, чтобы QR работал с любого устройства.
     </p>
   </div>
 
-  <!-- Размер -->
   <label for="size">Размер (px)</label>
   <input type="number" id="size" value="300" min="100" max="1000" step="50">
 
-  <!-- Цвет кода -->
   <label>Цвет кода</label>
   <button type="button" class="color-btn" id="fg-btn">
     <div class="swatch-preview" id="fg-preview" style="background:#000000"></div>
@@ -394,7 +286,6 @@
     <input type="color" id="fg-color-input" value="#000000">
   </button>
 
-  <!-- Цвет фона -->
   <label>Цвет фона</label>
   <button type="button" class="color-btn" id="bg-btn">
     <div class="swatch-preview" id="bg-preview" style="background:#ffffff"></div>
@@ -406,12 +297,16 @@
   <button id="generate">Сгенерировать QR-код</button>
 </div>
 
-<!-- Модальное окно -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <button class="close-btn" id="close-modal" title="Закрыть">✕</button>
     <h2>Ваш QR-код</h2>
     <div id="qrcode"></div>
+    <div id="modal-wait" class="modal-wait" style="display:none">
+      <div class="big-spinner"></div>
+      <div>⏳ Ждём загрузку картинки...</div>
+      <div style="font-size:12px;color:#999">QR появится сразу после завершения</div>
+    </div>
     <div class="modal-buttons">
       <button class="btn-secondary" id="download">💾 Скачать</button>
       <button id="regenerate">🔄 Обновить</button>
@@ -422,13 +317,13 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
   /* ============ КОНФИГ ============ */
-  // 🔑 Вставь сюда свой бесплатный API-ключ с https://api.imgbb.com/
   const IMGBB_API_KEY = 'ТВОЙ_API_КЛЮЧ_ЗДЕСЬ';
 
   let fgColor = '#000000';
   let bgColor = '#ffffff';
   let currentMode = 'text';
   let uploadedImageURL = null;
+  let uploadPromise = null; // промис текущей загрузки
 
   /* ============ ЦВЕТА ============ */
   const fgInput = document.getElementById('fg-color-input');
@@ -446,7 +341,7 @@
     document.getElementById('bg-hex').textContent = bgColor.toUpperCase();
   });
 
-  /* ============ ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА ============ */
+  /* ============ ПЕРЕКЛЮЧАТЕЛЬ ============ */
   document.querySelectorAll('.mode-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
@@ -463,7 +358,7 @@
   const uploadPlaceholder = document.getElementById('upload-placeholder');
   const uploadStatus = document.getElementById('upload-status');
 
-  imageInput.addEventListener('change', async e => {
+  imageInput.addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -485,15 +380,22 @@
     };
     reader.readAsDataURL(file);
 
-    // Загрузка на imgbb
+    // Сброс прошлого URL
+    uploadedImageURL = null;
+
+    // Проверка ключа
     if (!IMGBB_API_KEY || IMGBB_API_KEY === 'ТВОЙ_API_КЛЮЧ_ЗДЕСЬ') {
-      showStatus('error', '⚠️ Не задан IMGBB_API_KEY. Смотри инструкцию в чате.');
-      uploadedImageURL = null;
+      showStatus('error', '⚠️ Не задан IMGBB_API_KEY');
+      uploadPromise = Promise.resolve(null);
       return;
     }
 
-    showStatus('loading', '⏳ Загружаем картинку на сервер...');
+    // Запускаем загрузку — сохраняем промис
+    showStatus('loading', 'Загружаем картинку в фоне...');
+    uploadPromise = uploadToImgbb(file);
+  });
 
+  async function uploadToImgbb(file) {
     try {
       const formData = new FormData();
       formData.append('image', file);
@@ -502,29 +404,33 @@
         method: 'POST',
         body: formData
       });
-
       const data = await res.json();
 
-      if (data.success) {
-        uploadedImageURL = data.data.url;
-        showStatus('success', '✅ Картинка загружена! При сканировании QR откроется это фото.');
-      } else {
-        throw new Error(data.error?.message || 'Ошибка загрузки');
-      }
+      if (!data.success) throw new Error(data.error?.message || 'Ошибка');
+
+      uploadedImageURL = data.data.url;
+      showStatus('success', '✅ Картинка загружена');
+      return uploadedImageURL;
     } catch (err) {
-      showStatus('error', '❌ Ошибка загрузки: ' + err.message);
+      showStatus('error', '❌ Ошибка: ' + err.message);
       uploadedImageURL = null;
+      throw err;
     }
-  });
+  }
 
   function showStatus(type, text) {
     uploadStatus.className = 'upload-status show ' + type;
-    uploadStatus.textContent = text;
+    if (type === 'loading') {
+      uploadStatus.innerHTML = `<span class="spinner"></span>${text}`;
+    } else {
+      uploadStatus.textContent = text;
+    }
   }
 
   /* ============ ГЕНЕРАЦИЯ QR ============ */
   const modal = document.getElementById('modal');
   const qrContainer = document.getElementById('qrcode');
+  const modalWait = document.getElementById('modal-wait');
 
   document.getElementById('generate').addEventListener('click', generate);
   document.getElementById('regenerate').addEventListener('click', generate);
@@ -536,27 +442,54 @@
     if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
   });
 
-  function generate() {
-    let content = '';
-
-    if (currentMode === 'text') {
-      content = document.getElementById('text').value.trim();
-      if (!content) {
-        alert('Введите текст или ссылку!');
-        return;
-      }
-    } else {
-      if (!uploadedImageURL) {
-        alert('Сначала загрузите картинку и дождитесь окончания загрузки!');
-        return;
-      }
-      content = uploadedImageURL;
-    }
-
+  async function generate() {
     const size = Math.min(Math.max(parseInt(document.getElementById('size').value) || 300, 100), 1000);
 
-    qrContainer.innerHTML = '';
+    if (currentMode === 'text') {
+      const content = document.getElementById('text').value.trim();
+      if (!content) { alert('Введите текст или ссылку!'); return; }
+      renderQR(content, size);
+      modal.classList.add('show');
+      return;
+    }
 
+    // Режим картинки
+    if (!imageInput.files[0]) {
+      alert('Сначала выберите картинку!');
+      return;
+    }
+
+    // Если уже загружено — сразу рендер
+    if (uploadedImageURL) {
+      renderQR(uploadedImageURL, size);
+      modal.classList.add('show');
+      return;
+    }
+
+    // Иначе — открываем модалку со спиннером и ждём
+    qrContainer.innerHTML = '';
+    qrContainer.style.display = 'none';
+    modalWait.style.display = 'flex';
+    modal.classList.add('show');
+
+    try {
+      const url = await uploadPromise;
+      if (!url) throw new Error('Не удалось загрузить');
+
+      modalWait.style.display = 'none';
+      qrContainer.style.display = 'inline-block';
+      renderQR(url, size);
+    } catch (err) {
+      modalWait.innerHTML = `
+        <div style="font-size:40px">❌</div>
+        <div style="color:#c53030">Ошибка загрузки картинки</div>
+        <div style="font-size:12px;color:#999">${err.message}</div>
+      `;
+    }
+  }
+
+  function renderQR(content, size) {
+    qrContainer.innerHTML = '';
     new QRCode(qrContainer, {
       text: content,
       width: size,
@@ -565,11 +498,21 @@
       colorLight: bgColor,
       correctLevel: QRCode.CorrectLevel.H
     });
-
-    modal.classList.add('show');
   }
 
-  function closeModal() { modal.classList.remove('show'); }
+  function closeModal() {
+    modal.classList.remove('show');
+    // Сброс модалки
+    setTimeout(() => {
+      modalWait.style.display = 'none';
+      modalWait.innerHTML = `
+        <div class="big-spinner"></div>
+        <div>⏳ Ждём загрузку картинки...</div>
+        <div style="font-size:12px;color:#999">QR появится сразу после завершения</div>
+      `;
+      qrContainer.style.display = 'inline-block';
+    }, 300);
+  }
 
   function download() {
     const canvas = qrContainer.querySelector('canvas');
@@ -586,10 +529,9 @@
       alert('QR-код ещё не сгенерирован');
       return;
     }
-
     link.click();
   }
 </script>
 
 </body>
- </html>
+   </html>
