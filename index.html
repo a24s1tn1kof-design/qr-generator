@@ -231,7 +231,7 @@
 
   <div class="mode-panel active" data-panel="text">
     <label for="text">Текст или ссылка</label>
-    <textarea id="text" placeholder="Введите текст...">Привет, мир! 🎉</textarea>
+    <textarea id="text" placeholder="Введите текст...">Привет, мир!</textarea>
   </div>
 
   <div class="mode-panel" data-panel="image">
@@ -289,8 +289,23 @@
   </div>
 </div>
 
+<!-- qrcodejs + патч UTF-8 -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
+  /* === ФИКС UTF-8 для qrcodejs === */
+  (function() {
+    // Патчим QRCode.prototype.makeCode — принудительно UTF-8 через escape/unescape
+    const _makeCode = QRCode.prototype.makeCode;
+    QRCode.prototype.makeCode = function(s) {
+      // Если строка содержит не-ASCII (кириллица, эмодзи) — кодируем в UTF-8
+      if (/[^\x00-\x7F]/.test(s)) {
+        s = unescape(encodeURIComponent(s));
+      }
+      return _makeCode.call(this, s);
+    };
+  })();
+  /* === КОНЕЦ ФИКСА === */
+
   let fgColor = '#000000';
   let bgColor = '#ffffff';
   let currentMode = 'text';
@@ -399,7 +414,6 @@
     qrContainer.innerHTML = '';
 
     try {
-      // escape/unescape — фикс кириллицы для qrcodejs
       new QRCode(qrContainer, {
         text: content,
         width: size,
@@ -455,4 +469,4 @@
 </script>
 
 </body>
-     </html>
+ </html>
