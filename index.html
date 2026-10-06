@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Генератор QR-кодов — Вариант 1 (сжатие)</title>
+<title>Генератор QR-кодов — Catbox</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -268,12 +268,12 @@
     <div class="upload-zone" id="upload-zone">
       <input type="file" id="image-input" accept="image/*">
       <span id="upload-placeholder">📷 Нажмите, чтобы выбрать фото</span>
-      <span class="hint">Картинка сжимается автоматически → быстрая загрузка</span>
+      <span class="hint">Сжимается автоматически → быстрая загрузка</span>
     </div>
     <div class="upload-status" id="upload-status"></div>
     <div class="size-info" id="size-info" style="display:none"></div>
     <p class="help-text">
-      ⚡ Картинка сжимается прямо в браузере до ~200 КБ перед отправкой.
+      ⚡ Хостинг: catbox.moe (без API-ключа, без регистрации).
     </p>
   </div>
 
@@ -320,15 +320,11 @@
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 <script>
   /* ============ КОНФИГ ============ */
-  // 🔑 Получи бесплатно: https://api.imgbb.com/
-  const IMGBB_API_KEY = 'ТВОЙ_API_КЛЮЧ_ЗДЕСЬ';
-
-  // ⚙️ Параметры сжатия
   const COMPRESSION = {
-    maxSizeMB: 0.2,          // 200 КБ
-    maxWidthOrHeight: 1280,  // Разрешение
-    useWebWorker: true,      // Не блокирует UI
-    initialQuality: 0.8      // Качество JPEG
+    maxSizeMB: 0.2,
+    maxWidthOrHeight: 1280,
+    useWebWorker: true,
+    initialQuality: 0.8
   };
 
   let fgColor = '#000000';
@@ -364,7 +360,7 @@
     });
   });
 
-  /* ============ ЗАГРУЗКА ФОТО С СЖАТИЕМ ============ */
+  /* ============ ЗАГРУЗКА ФОТО ============ */
   const uploadZone = document.getElementById('upload-zone');
   const imageInput = document.getElementById('image-input');
   const uploadPlaceholder = document.getElementById('upload-placeholder');
@@ -380,12 +376,11 @@
       return;
     }
 
-    // Показываем исходный размер
     const originalKB = (file.size / 1024).toFixed(0);
     sizeInfo.style.display = 'block';
     sizeInfo.textContent = `📦 Исходный размер: ${originalKB} КБ. Сжимаем...`;
 
-    // 1. Сжимаем в браузере
+    // 1. Сжатие
     let compressedFile = file;
     try {
       showStatus('loading', '🗜️ Сжимаем картинку...');
@@ -397,11 +392,11 @@
 
       console.log(`Сжатие: ${originalKB} КБ → ${compressedKB} КБ`);
     } catch (err) {
-      console.warn('Сжатие не удалось, грузим как есть', err);
-      sizeInfo.textContent = `⚠️ Не удалось сжать, грузим как есть (${originalKB} КБ)`;
+      console.warn('Сжатие не удалось', err);
+      sizeInfo.textContent = `⚠️ Не удалось сжать (${originalKB} КБ), грузим как есть`;
     }
 
-    // 2. Превью из сжатого файла (быстрее)
+    // 2. Превью
     const reader = new FileReader();
     reader.onload = ev => {
       uploadZone.classList.add('has-file');
@@ -409,35 +404,35 @@
     };
     reader.readAsDataURL(compressedFile);
 
-    // 3. Загрузка в фоне
+    // 3. Загрузка на Catbox
     uploadedImageURL = null;
-
-    if (!IMGBB_API_KEY || IMGBB_API_KEY === 'ТВОЙ_API_КЛЮЧ_ЗДЕСЬ') {
-      showStatus('error', '⚠️ Не задан IMGBB_API_KEY. Смотри комментарий в коде.');
-      uploadPromise = Promise.resolve(null);
-      return;
-    }
-
-    showStatus('loading', '⏳ Загружаем на сервер...');
-    uploadPromise = uploadToImgbb(compressedFile);
+    showStatus('loading', '⏳ Загружаем на catbox.moe...');
+    uploadPromise = uploadToCatbox(compressedFile);
   });
 
-  async function uploadToImgbb(file) {
+  async function uploadToCatbox(file) {
     try {
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('reqtype', 'fileupload');
+      formData.append('fileToUpload', file);
 
-      const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      const res = await fetch('https://catbox.moe/user/api.php', {
         method: 'POST',
         body: formData
       });
-      const data = await res.json();
 
-      if (!data.success) throw new Error(data.error?.message || 'Ошибка');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
 
-      uploadedImageURL = data.data.url;
+      const url = (await res.text()).trim();
+
+      if (!url.startsWith('http')) {
+        throw new Error('Некорректный ответ сервера: ' + url.slice(0, 100));
+      }
+
+      uploadedImageURL = url;
       showStatus('success', '✅ Картинка загружена!');
-      return uploadedImageURL;
+      console.log('URL:', url);
+      return url;
     } catch (err) {
       showStatus('error', '❌ Ошибка: ' + err.message);
       uploadedImageURL = null;
@@ -480,7 +475,6 @@
       return;
     }
 
-    // Режим картинки
     if (!imageInput.files[0]) {
       alert('Сначала выберите картинку!');
       return;
@@ -492,7 +486,6 @@
       return;
     }
 
-    // Ждём загрузку в модалке
     qrContainer.innerHTML = '';
     qrContainer.style.display = 'none';
     modalWait.style.display = 'flex';
